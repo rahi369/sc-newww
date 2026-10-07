@@ -1,0 +1,6 @@
+{
+  "name": "SAMIA'S CLOSET",
+  "description": "SAMIA’S CLOSET — Premium Fashion E-Commerce for Women & Boys/Men clothing by Md. Humaun Husen Rahi.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

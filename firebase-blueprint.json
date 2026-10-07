@@ -1,0 +1,192 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile with customer code and role",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "email": { "type": "string", "maxLength": 256 },
+        "displayName": { "type": "string", "maxLength": 128 },
+        "role": { "type": "string", "enum": ["customer", "admin"] },
+        "customerCode": { "type": "string", "maxLength": 32 },
+        "phone": { "type": "string", "maxLength": 32 },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "email", "role"]
+    },
+    "Product": {
+      "title": "Product",
+      "description": "Fashion clothing product item",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "maxLength": 200 },
+        "image": { "type": "string", "maxLength": 1024 },
+        "images": { "type": "array" },
+        "price": { "type": "number" },
+        "category": { "type": "string", "enum": ["Women", "Boys/Men"] },
+        "description": { "type": "string", "maxLength": 4000 },
+        "stock": { "type": "number" },
+        "sizes": { "type": "array" },
+        "colors": { "type": "array" },
+        "status": { "type": "string", "enum": ["in_stock", "out_of_stock"] },
+        "visibility": { "type": "boolean" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "name", "price", "category", "stock", "visibility"]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "Customer purchase order",
+      "type": "object",
+      "properties": {
+        "orderId": { "type": "string", "maxLength": 64 },
+        "customerId": { "type": "string", "maxLength": 128 },
+        "customerCode": { "type": "string", "maxLength": 32 },
+        "customerName": { "type": "string", "maxLength": 128 },
+        "phone": { "type": "string", "maxLength": 32 },
+        "address": { "type": "string", "maxLength": 500 },
+        "area": { "type": "string", "enum": ["Moulvibazar", "Outside Moulvibazar"] },
+        "items": { "type": "array" },
+        "quantity": { "type": "number" },
+        "subtotal": { "type": "number" },
+        "discount": { "type": "number" },
+        "deliveryCharge": { "type": "number" },
+        "total": { "type": "number" },
+        "paymentMethod": { "type": "string", "enum": ["Cash on Delivery", "bKash", "Nagad"] },
+        "transactionId": { "type": "string", "maxLength": 128 },
+        "status": { "type": "string", "enum": ["Pending", "Confirmed", "Delivered", "Cancelled"] },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["orderId", "customerId", "customerName", "phone", "address", "area", "items", "total", "paymentMethod", "status"]
+    },
+    "QuizQuestion": {
+      "title": "QuizQuestion",
+      "description": "Challenging fashion and business quiz question",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "question": { "type": "string", "maxLength": 500 },
+        "options": { "type": "array" },
+        "correctAnswer": { "type": "number" },
+        "active": { "type": "boolean" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "question", "options", "correctAnswer", "active"]
+    },
+    "QuizAttempt": {
+      "title": "QuizAttempt",
+      "description": "Daily customer quiz attempt record",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "customerId": { "type": "string", "maxLength": 128 },
+        "questionId": { "type": "string", "maxLength": 128 },
+        "selectedAnswer": { "type": "number" },
+        "isCorrect": { "type": "boolean" },
+        "rewardAmount": { "type": "number" },
+        "createdAt": { "type": "string" },
+        "dateStr": { "type": "string", "maxLength": 20 }
+      },
+      "required": ["id", "customerId", "questionId", "selectedAnswer", "isCorrect", "dateStr"]
+    },
+    "Voucher": {
+      "title": "Voucher",
+      "description": "Customer voucher balance and usage limit",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "customerId": { "type": "string", "maxLength": 128 },
+        "amount": { "type": "number" },
+        "source": { "type": "string", "enum": ["quiz", "mystery_box", "admin", "welcome"] },
+        "createdAt": { "type": "string" },
+        "expiresAt": { "type": "string" },
+        "usageCount": { "type": "number" },
+        "maxUsage": { "type": "number" },
+        "status": { "type": "string", "enum": ["active", "used", "expired"] }
+      },
+      "required": ["id", "customerId", "amount", "source", "maxUsage", "usageCount", "status"]
+    },
+    "RewardProfile": {
+      "title": "RewardProfile",
+      "description": "Customer streak, purchase counter, and gift status",
+      "type": "object",
+      "properties": {
+        "customerId": { "type": "string", "maxLength": 128 },
+        "streak": { "type": "number" },
+        "totalPurchases": { "type": "number" },
+        "lastPurchaseDate": { "type": "string" },
+        "lastMysteryBoxDate": { "type": "string" },
+        "isGiftEligible": { "type": "boolean" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["customerId", "streak", "totalPurchases"]
+    },
+    "MysteryBox": {
+      "title": "MysteryBox",
+      "description": "Weekly mystery box claim record",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "customerId": { "type": "string", "maxLength": 128 },
+        "wonAmount": { "type": "number" },
+        "weekIdentifier": { "type": "string", "maxLength": 32 },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "customerId", "wonAmount", "weekIdentifier"]
+    },
+    "Setting": {
+      "title": "Setting",
+      "description": "Store settings, hero wallpaper, and announcements",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "key": { "type": "string", "maxLength": 64 },
+        "value": { "type": "string", "maxLength": 4000 }
+      },
+      "required": ["id", "key"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "User" },
+      "description": "Customer profiles and roles"
+    },
+    "/products/{productId}": {
+      "schema": { "$ref": "Product" },
+      "description": "Public clothing catalog"
+    },
+    "/orders/{orderId}": {
+      "schema": { "$ref": "Order" },
+      "description": "Customer and store order receipts"
+    },
+    "/quizQuestions/{questionId}": {
+      "schema": { "$ref": "QuizQuestion" },
+      "description": "Business questions managed by admin"
+    },
+    "/quizAttempts/{attemptId}": {
+      "schema": { "$ref": "QuizAttempt" },
+      "description": "Customer daily attempts and lifetime history"
+    },
+    "/vouchers/{voucherId}": {
+      "schema": { "$ref": "Voucher" },
+      "description": "Customer earned discounts and wallets"
+    },
+    "/rewardProfiles/{userId}": {
+      "schema": { "$ref": "RewardProfile" },
+      "description": "Customer streaks and purchase qualification records"
+    },
+    "/mysteryBoxes/{boxId}": {
+      "schema": { "$ref": "MysteryBox" },
+      "description": "Weekly mystery box claims"
+    },
+    "/settings/{settingId}": {
+      "schema": { "$ref": "Setting" },
+      "description": "Site configurations and banner content"
+    }
+  }
+}

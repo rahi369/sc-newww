@@ -1,0 +1,85 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && request.auth.token.email == 'rahihumaun369@gmail.com';
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    // Default deny all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Users collection
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isOwner(userId) && request.resource.data.role == 'customer';
+      allow update: if (isOwner(userId) && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['role']))) || isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Products collection: public read for visible products, write by admin
+    match /products/{productId} {
+      allow read: if resource.data.visibility == true || isAdmin();
+      allow write: if isAdmin();
+    }
+
+    // Orders collection: customers read their own; can create with initial 'Pending'; only admin updates
+    match /orders/{orderId} {
+      allow read: if (isSignedIn() && resource.data.customerId == request.auth.uid) || isAdmin();
+      allow create: if isSignedIn() && request.resource.data.customerId == request.auth.uid && request.resource.data.status == 'Pending';
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Quiz Questions: active questions readable by signed in customers; write only by admin
+    match /quizQuestions/{questionId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // Quiz Attempts: customer can read/create their own attempts
+    match /quizAttempts/{attemptId} {
+      allow read: if (isSignedIn() && resource.data.customerId == request.auth.uid) || isAdmin();
+      allow create: if isSignedIn() && request.resource.data.customerId == request.auth.uid;
+      allow update, delete: if isAdmin();
+    }
+
+    // Vouchers: customer can read their own; create on valid reward; update usage during order
+    match /vouchers/{voucherId} {
+      allow read: if (isSignedIn() && resource.data.customerId == request.auth.uid) || isAdmin();
+      allow create: if (isSignedIn() && request.resource.data.customerId == request.auth.uid) || isAdmin();
+      allow update: if (isSignedIn() && resource.data.customerId == request.auth.uid) || isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Reward Profiles: streak and purchases
+    match /rewardProfiles/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create, update: if isOwner(userId) || isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Mystery Boxes: recorded claims
+    match /mysteryBoxes/{boxId} {
+      allow read: if (isSignedIn() && resource.data.customerId == request.auth.uid) || isAdmin();
+      allow create: if isSignedIn() && request.resource.data.customerId == request.auth.uid;
+      allow update, delete: if isAdmin();
+    }
+
+    // Settings & Content
+    match /settings/{settingId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+  }
+}
